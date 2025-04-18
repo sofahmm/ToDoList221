@@ -6,6 +6,11 @@
         xmlns:local="clr-namespace:ToDoList221"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    
+    <Window.Resources>
+        <local:DoneToTextDecorationConverter x:Key="DoneToTextDecorationConverter"/>
+    </Window.Resources>
+    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -30,13 +35,13 @@
                 <DataTemplate>
                     <DockPanel LastChildFill="True"
                                Margin="0 2">
-                        <CheckBox IsChecked="{Binding}"
+                        <CheckBox IsChecked="{Binding IsDone}"
                                   Margin="5"
                                   Checked="CheckBox_Changed"
                                   Unchecked="CheckBox_Changed"/>
-                        <TextBlock Text="{Binding}"
+                        <TextBlock Text="{Binding Title}"
                                    VerticalAlignment="Center"
-                                   TextDecorations="{Binding}"/>
+                                   TextDecorations="{Binding IsDone, Converter={StaticResource DoneToTextDecorationConverter}}"/>
                         <Button Content="✕"
                                 DockPanel.Dock="Right"
                                 Margin="5"
@@ -46,7 +51,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock x:Name="CounterText" 
+        <TextBlock x:Name="CounterTextTbl" 
                    Grid.Row="2" 
                    HorizontalAlignment="Right" 
                    FontWeight="Bold" 
