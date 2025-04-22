@@ -3,30 +3,76 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:ToDoList221"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    
+        Title="MainWindow" Height="500" Width="1100">
     <Window.Resources>
         <local:DoneToTextDecorationConverter x:Key="DoneToTextDecorationConverter"/>
+        <Style x:Key="OverdueTaskStyle" TargetType="TextBox">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsOverdue}" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
-    
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal"
+        <StackPanel Orientation="Vertical"
+                    Height="100">
+            <StackPanel Orientation="Horizontal"
                     Margin="0 0 0 10">
-            <TextBox x:Name="TaskInputTb"
+                <TextBox x:Name="TaskInputTb"
                      Width="250"
                      Height="30"
                      Margin="0 0 10 0"/>
-            <Button x:Name="AddTaskBtn"
+                <DatePicker x:Name="DueDatePicker" 
+                        Width="130" 
+                        Height="30"
+                        Margin="0 0 10 0" 
+                        SelectedDate="{x:Static sys:DateTime.Today}" />
+                <ComboBox x:Name="CategoryComboBox" Width="130" Height="30" Margin="0 0 10 0">
+                    <ComboBoxItem Content="Работа"/>
+                    <ComboBoxItem Content="Личное"/>
+                    <ComboBoxItem Content="Дом"/>
+                </ComboBox>
+                <Button x:Name="AddTaskBtn"
                     Content="Добавить"
                     Width="100"
                     Click="AddTaskBtn_Click"/>
+                
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="0 0 0 10">
+                <TextBox x:Name="SearchTextBox" Width="250"
+                     Height="30" Margin="10 0 10 0" 
+                     TextChanged="SearchTextBox_TextChanged"/>
+                <ComboBox x:Name="CategoryFilterComboBox" 
+                      Width="130" Height="30" 
+                      Margin="0 0 10 0" SelectionChanged="CategoryFilterComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Все"/>
+                    <ComboBoxItem Content="Работа"/>
+                    <ComboBoxItem Content="Личное"/>
+                    <ComboBoxItem Content="Дом"/>
+                </ComboBox>
+                <ComboBox x:Name="SortComboBox"
+                          Width="200" Height="30"
+                          Margin="0 0 10 0" 
+                          SelectionChanged="SortComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Без сортировки" IsSelected="True" />
+                    <ComboBoxItem Content="По дате (по возрастанию)" />
+                    <ComboBoxItem Content="По дате (по убыванию)" />
+                    <ComboBoxItem Content="По статусу" />
+                    <ComboBoxItem Content="По категории" />
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
 
         <ListBox x:Name="TaskListLb"
@@ -39,22 +85,42 @@
                                   Margin="5"
                                   Checked="CheckBox_Changed"
                                   Unchecked="CheckBox_Changed"/>
-                        <TextBlock Text="{Binding Title}"
-                                   VerticalAlignment="Center"
-                                   TextDecorations="{Binding IsDone, Converter={StaticResource DoneToTextDecorationConverter}}"/>
+                        <StackPanel>
+                            <TextBox Text="{Binding Title}"
+                                     Style="{StaticResource OverdueTaskStyle}"
+                                     Width="500"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     BorderThickness="0"
+                                     TextDecorations="{Binding IsDone, Converter={StaticResource DoneToTextDecorationConverter}}"
+                                     Background="Transparent" />
+                            <TextBlock Text="{Binding DueDate, StringFormat='До: {0:dd.MM.yyyy}'}" 
+                                       FontSize="10"
+                                       Foreground="Gray"/>
+                        </StackPanel>
                         <Button Content="✕"
-                                DockPanel.Dock="Right"
                                 Margin="5"
+                                Width="25"
+                                Height="25"
                                 x:Name="DeleteTaskBtn"
                                 Click="DeleteTaskBtn_Click"/>
+                        <TextBlock Text="{Binding Category}" 
+                                   Margin="5" 
+                                   VerticalAlignment="Center"/>
                     </DockPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock x:Name="CounterTextTbl" 
-                   Grid.Row="2" 
-                   HorizontalAlignment="Right" 
-                   FontWeight="Bold" 
-                   Margin="0 10 0 0"/>
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0 10 0 0">
+            <Button Content="Удалить выполненные" 
+                    x:Name="DeleteCompletedBtn"
+                    Margin="0 0 10 0" 
+                    Click="DeleteCompletedBtn_Click"/>
+            <TextBlock x:Name="CounterTextTbl" 
+                       FontWeight="Bold"/>
+        </StackPanel>
     </Grid>
 </Window>
